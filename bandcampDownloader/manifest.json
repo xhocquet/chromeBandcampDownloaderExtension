@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "Bandcamp Scraper",
+  "description": "This extension scrapes mp3s from Bandcamp pages.",
+  "version": "1.0",
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js", "jquery.js"]
+  },
+  "browser_action": {
+    "default_title": "Download tracks from this page"
+  },
+  "permissions": [
+    "http://*.bandcamp.com/*",
+    "activeTab",
+    "downloads"
+  ]
+}
