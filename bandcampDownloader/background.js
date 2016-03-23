@@ -1,17 +1,18 @@
+var self = this;
 var tracklist = [];
 var artistName;
-var parser = new DOMParser();
 var currentTab;
+var parser = new DOMParser();
 
-function getLinks(url, callback) {
+var getLinks = function(url, callback) {
   var regex = /"\/\/([a-z]|[A-Z]|[0-9]|\.|\/|\?|=|-|&)+"/g;
   var content = $.get(url, function(response) {
     callback(response.match(regex));
   });
-}
+};
 
-function parseTrackList(content) {
-  var virtualDOM = parser.parseFromString(content, 'text/html');
+var parseTrackList = function(content) {
+  var virtualDOM = parser.parseFromString(content.response, 'text/html')
   var trackRows = virtualDOM.getElementsByClassName('track_row_view')
   artistName = virtualDOM.getElementById('band-name-location').children[0].innerHTML;
 
@@ -20,11 +21,11 @@ function parseTrackList(content) {
     tracklist.push(artistName + " - " + curTrackTitle);
   }
 
-  downloadLinks();
-}
+  self.downloadLinks();
+};
 
-function downloadLinks() {
-  getLinks(currentTab.url, function(links) {
+var downloadLinks = function() {
+  self.getLinks(currentTab.url, function(links) {
     links = links.filter(link => {
       if (link.search('gif') > -1 || link.search('jpg') > -1 || link.search('html') > -1 || link.search('htm') > -1) {
         return false;
@@ -43,10 +44,12 @@ function downloadLinks() {
       }
     }
   });
-}
+};
 
 
 chrome.browserAction.onClicked.addListener(function(tab) {
   currentTab = tab;
-  chrome.tabs.sendMessage(tab.id, 'event', parseTrackList);
+  chrome.tabs.sendMessage(currentTab.id, 'event', function(response) {
+    self.parseTrackList(response);
+  });
 });
